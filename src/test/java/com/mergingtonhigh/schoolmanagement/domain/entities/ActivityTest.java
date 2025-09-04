@@ -11,6 +11,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import com.mergingtonhigh.schoolmanagement.domain.valueobjects.ActivityType;
+import com.mergingtonhigh.schoolmanagement.domain.valueobjects.DifficultyLevel;
 import com.mergingtonhigh.schoolmanagement.domain.valueobjects.Email;
 import com.mergingtonhigh.schoolmanagement.domain.valueobjects.ScheduleDetails;
 
@@ -105,6 +106,50 @@ class ActivityTest {
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () -> activity.removeParticipant(studentEmail));
+    }
+
+    @Test
+    void shouldCreateActivityWithDifficultyLevel() {
+        // Arrange
+        ScheduleDetails schedule = new ScheduleDetails(
+                List.of("Monday", "Wednesday"),
+                LocalTime.of(15, 30),
+                LocalTime.of(17, 0));
+
+        // Act
+        Activity activity = new Activity(
+                "Clube de Xadrez Avançado",
+                "Aprenda estratégias avançadas de xadrez",
+                "Seg/Qua 15:30-17:00",
+                schedule,
+                12,
+                ActivityType.ACADEMIC,
+                DifficultyLevel.AVANCADO);
+
+        // Assert
+        assertEquals("Clube de Xadrez Avançado", activity.getName());
+        assertEquals(DifficultyLevel.AVANCADO, activity.getDifficultyLevel());
+    }
+
+    @Test
+    void shouldCreateActivityWithoutDifficultyLevel() {
+        // Arrange
+        Activity activity = createTestActivity();
+
+        // Assert
+        assertEquals(null, activity.getDifficultyLevel());
+    }
+
+    @Test
+    void shouldSetAndGetDifficultyLevel() {
+        // Arrange
+        Activity activity = createTestActivity();
+
+        // Act
+        activity.setDifficultyLevel(DifficultyLevel.INTERMEDIARIO);
+
+        // Assert
+        assertEquals(DifficultyLevel.INTERMEDIARIO, activity.getDifficultyLevel());
     }
 
     private Activity createTestActivity() {
