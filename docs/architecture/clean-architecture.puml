@@ -18,6 +18,7 @@ package "Application Layer" {
 package "Domain Layer" {
     [Activity Entity]
     [Teacher Entity]
+    [ActivityType Enum]
     [Email Value Object]
     [Schedule Details Value Object]
     [Repository Interfaces]
@@ -26,6 +27,7 @@ package "Domain Layer" {
 
 package "Infrastructure Layer" {
     [MongoDB Repositories]
+    [Mongock Migrations]
     [Security Configuration]
     [Database Configuration]
     [Password Encoder]
@@ -34,6 +36,7 @@ package "Infrastructure Layer" {
 database "MongoDB" {
     [activities]
     [teachers]
+    [mongockChangeLog]
 }
 
 [Activity Controller] --> [Activity Use Case] : uses
@@ -53,6 +56,11 @@ database "MongoDB" {
 [MongoDB Repositories] --> [activities] : persists to
 [MongoDB Repositories] --> [teachers] : persists to
 
+[Mongock Migrations] --> [mongockChangeLog] : tracks migrations
+[Mongock Migrations] --> [activities] : creates initial data
+[Mongock Migrations] --> [teachers] : creates initial data
+
+[Activity Entity] --> [ActivityType Enum] : uses
 [Activity Entity] --> [Email Value Object] : uses
 [Activity Entity] --> [Schedule Details Value Object] : uses
 
@@ -67,6 +75,18 @@ note bottom of [Domain Layer]
     Core business logic
     No external dependencies
     Framework independent
+    
+    ActivityType provides automatic
+    categorization with bilingual
+    keyword detection
+end note
+
+note top of [Mongock Migrations]
+    V001: Initial setup with core activities
+    V002: Manga Maniacs Club + ActivityType enum
+    
+    Automatic rollback support
+    Environment-based configuration
 end note
 
 @enduml

@@ -26,7 +26,8 @@ src/main/java/com/mergingtonhigh/schoolmanagement/
 │   ├── repositories/         # Interfaces de repositório
 │   │   ├── ActivityRepository.java
 │   │   └── TeacherRepository.java
-│   └── valueobjects/         # Objetos de valor
+│   ├── valueobjects/         # Objetos de valor
+│       ├── ActivityType.java   # Enum para tipos de atividade (V002)
 │       ├── Email.java        # Validação de email
 │       └── ScheduleDetails.java # Detalhes de horário
 ├── application/              # 🔧 Camada de Aplicação
@@ -40,7 +41,8 @@ src/main/java/com/mergingtonhigh/schoolmanagement/
 ├── infrastructure/           # 🏭 Camada de Infraestrutura
 │   ├── config/               # Configurações
 │   ├── migrations/           # Migrações do banco
-│   │   └── V001_InitialDatabaseSetup.java
+│   │   ├── V001_InitialDatabaseSetup.java
+│   │   └── V002_AddMangaManiacsClub.java
 │   └── persistence/          # Implementações de repositório
 │       ├── ActivityRepositoryImpl.java
 │       ├── MongoActivityRepository.java
@@ -48,7 +50,9 @@ src/main/java/com/mergingtonhigh/schoolmanagement/
 │       └── TeacherRepositoryImpl.java
 └── presentation/             # 🎨 Camada de Apresentação
     ├── controllers/          # Controllers REST
-    │   └── ActivityController.java
+    │   ├── ActivityController.java
+    │   ├── AuthController.java        # Novo na V002
+    │   └── StaticController.java      # Serve conteúdo estático
     └── mappers/              # Mapeadores DTO ↔ Entity
         ├── ActivityMapper.java
         └── TeacherMapper.java
@@ -91,7 +95,11 @@ src/main/java/com/mergingtonhigh/schoolmanagement/
 - **Listagem de atividades** com filtros por:
   - Dia da semana
   - Horário (manhã, tarde, fim de semana)
-  - Categoria (esportes, artes, acadêmico, etc.)
+  - Categoria automática (esportes, artes, acadêmico, comunidade, tecnologia)
+- **Categorização inteligente** via enum ActivityType com:
+  - Detecção automática baseada em nome e descrição
+  - Cores personalizadas para cada categoria na interface
+  - Suporte a múltiplos idiomas (português e inglês)
 - **Detalhes de atividades**:
   - Nome e descrição
   - Horários e dias da semana
@@ -100,9 +108,11 @@ src/main/java/com/mergingtonhigh/schoolmanagement/
 
 ### 👨‍🏫 Sistema de Autenticação
 
-- **Login de professores** com username/senha
+- **Login de professores** com username/senha via API REST
+- **Verificação de sessão** para validar usuários logados
 - **Controle de acesso** baseado em roles (TEACHER/ADMIN)
-- **Autenticação requerida** para inscrições
+- **Autenticação requerida** para inscrições e operações administrativas
+- **Endpoints dedicados** em `/auth/login` e `/auth/check-session`
 
 ### 📝 Gestão de Inscrições
 
@@ -180,6 +190,17 @@ GET /activities?day=Monday&start_time=15:00&end_time=17:00
 GET /activities/days
 ```
 
+#### Autenticação
+
+```http
+POST /auth/login
+Content-Type: application/x-www-form-urlencoded
+
+username=teacher.rodriguez&password=password
+
+GET /auth/check-session?username=teacher.rodriguez
+```
+
 #### Inscrições
 
 ```http
@@ -193,6 +214,8 @@ Content-Type: application/x-www-form-urlencoded
 
 email=student@mergington.edu&teacher_username=teacher1
 ```
+
+📖 **[Documentação Completa da API](API.md)** - Consulte para exemplos detalhados, códigos de erro e fluxos completos.
 
 ## 🧪 Testes
 
@@ -223,17 +246,34 @@ mvn jacoco:report
 
 O sistema utiliza **Mongock** para realizar migrações automáticas do banco de dados, incluindo:
 
+### Migrações Implementadas
+
+#### V001 - Configuração Inicial do Banco de Dados
+- Criação de professores padrão com senhas criptografadas
+- Inserção de atividades iniciais (Chess Club, Art Club, Drama Club, Soccer Team, Programming Class)
+- Configuração de índices e estruturas básicas
+
+#### V002 - Adição do Manga Maniacs Club
+- Adição da nova atividade "Manga Maniacs" focada em cultura japonesa
+- Implementação do enum ActivityType para categorização automática
+- Melhorias na estrutura de dados para suporte a tipos de atividade
+
 ### Professores Padrão
 
 - **admin** - Administrador principal
 - **teacher.rodriguez** - Professor de artes
 - **teacher.chen** - Professor de xadrez
 
+*Nota: As senhas são configuráveis via variáveis de ambiente ou usam valores seguros padrão definidos no código.*
+
 ### Atividades Exemplo
 
 - **Art Club** - Terças e quintas, 15:30-17:00
 - **Chess Club** - Segundas e quartas, 15:30-17:00
 - **Drama Club** - Quartas e sextas, 16:00-18:00
+- **Manga Maniacs** - Terças, 19:00-20:30 (Adicionado na V002)
+- **Soccer Team** - Segundas, quartas e sextas, 16:00-18:00
+- **Programming Class** - Quintas, 16:00-18:00
 
 ## 🔒 Segurança
 

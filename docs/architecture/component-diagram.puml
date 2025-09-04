@@ -12,12 +12,16 @@ Container_Boundary(webApp, "Spring Boot Web Application") {
     Component(authUseCase, "Authentication Use Case", "Application Service", "Orchestrates authentication logic")
     Component(registrationUseCase, "Student Registration Use Case", "Application Service", "Handles student registrations")
     
-    Component(activityEntity, "Activity Entity", "Domain Model", "Core activity business logic")
+    Component(activityEntity, "Activity Entity", "Domain Model", "Core activity business logic with ActivityType")
     Component(teacherEntity, "Teacher Entity", "Domain Model", "Core teacher business logic")
+    Component(activityType, "ActivityType Enum", "Value Object", "Automatic activity categorization")
+    Component(scheduleDetails, "ScheduleDetails", "Value Object", "Activity scheduling information")
+    Component(email, "Email", "Value Object", "Email validation and formatting")
     
     Component(activityRepo, "Activity Repository", "Data Access", "Activity data persistence")
     Component(teacherRepo, "Teacher Repository", "Data Access", "Teacher data persistence")
     
+    Component(mongockMigrations, "Mongock Migrations", "Database Migrations", "V001 Initial Setup + V002 Manga Maniacs")
     Component(securityConfig, "Security Config", "Spring Security", "Authentication and authorization")
 }
 
@@ -32,6 +36,10 @@ Rel(authUseCase, teacherEntity, "Uses")
 Rel(registrationUseCase, activityEntity, "Uses")
 Rel(registrationUseCase, teacherEntity, "Uses")
 
+Rel(activityEntity, activityType, "Uses")
+Rel(activityEntity, scheduleDetails, "Uses")
+Rel(activityEntity, email, "Uses")
+
 Rel(activityUseCase, activityRepo, "Uses")
 Rel(authUseCase, teacherRepo, "Uses")
 Rel(registrationUseCase, activityRepo, "Uses")
@@ -39,5 +47,6 @@ Rel(registrationUseCase, teacherRepo, "Uses")
 
 Rel(activityRepo, database, "Reads from and writes to")
 Rel(teacherRepo, database, "Reads from and writes to")
+Rel(mongockMigrations, database, "Migrates")
 
 @enduml

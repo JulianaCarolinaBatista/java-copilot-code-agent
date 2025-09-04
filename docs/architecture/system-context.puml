@@ -3,15 +3,27 @@
 
 title System Context Diagram - High School Management System
 
-Person(teacher, "Teacher", "School staff member who manages student activities")
+Person(teacher, "Teacher", "School staff member who manages student activities and authenticates students")
 Person(student, "Student", "Student who wants to join extracurricular activities")
+Person(admin, "Administrator", "System administrator with full access")
 
-System(schoolSystem, "School Management System", "Manages extracurricular activities and student registrations")
+System(schoolSystem, "School Management System", "Manages extracurricular activities and student registrations with authentication")
 
-System_Ext(database, "MongoDB Database", "Stores activities, teachers, and student registrations")
+System_Ext(database, "MongoDB Database", "Stores activities, teachers, student registrations, and migration history")
 
-Rel(teacher, schoolSystem, "Manages activities and student registrations", "HTTPS")
-Rel(student, schoolSystem, "Views available activities", "HTTPS")
+Rel(teacher, schoolSystem, "Manages activities, authenticates, and registers students", "HTTPS/REST API")
+Rel(student, schoolSystem, "Views available activities and schedules", "HTTPS/Web Interface")
+Rel(admin, schoolSystem, "Full system administration", "HTTPS/REST API")
 Rel(schoolSystem, database, "Reads from and writes to", "MongoDB Protocol")
+
+note right of schoolSystem
+    Features:
+    - Activity management with filtering
+    - Automatic categorization (5 types)
+    - Teacher authentication system
+    - Student registration/unregistration
+    - Real-time capacity management
+    - Mongock database migrations
+end note
 
 @enduml
