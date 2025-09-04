@@ -5,16 +5,39 @@ title Container Diagram - High School Management System
 
 Person(teacher, "Teacher", "School staff member")
 Person(student, "Student", "Student user")
+Person(admin, "Administrator", "System administrator")
 
 System_Boundary(schoolSystem, "School Management System") {
-    Container(webApp, "Web Application", "Spring Boot 3", "Provides REST API and serves static web content")
-    Container(frontend, "Frontend", "HTML/CSS/JavaScript", "Provides user interface for activities management")
-    ContainerDb(database, "Database", "MongoDB", "Stores activities, teachers, and registrations")
+    Container(webApp, "Web Application", "Spring Boot 3.5.4", "Provides REST API with Clean Architecture, authentication, and database migrations")
+    Container(frontend, "Frontend", "HTML/CSS/JavaScript", "Responsive web interface with activity filtering, login modal, and real-time updates")
+    ContainerDb(database, "Database", "MongoDB", "Stores activities (with types), teachers, registrations, and migration history")
 }
 
-Rel(teacher, frontend, "Uses", "HTTPS")
-Rel(student, frontend, "Uses", "HTTPS")
+Rel(teacher, frontend, "Uses for activity management", "HTTPS")
+Rel(student, frontend, "Views activities and schedules", "HTTPS")
+Rel(admin, frontend, "System administration", "HTTPS")
+
+Rel(teacher, webApp, "Authentication and API calls", "JSON/HTTPS")
 Rel(frontend, webApp, "Makes API calls to", "JSON/HTTPS")
+
 Rel(webApp, database, "Reads from and writes to", "MongoDB Protocol")
+
+note right of webApp
+    Features:
+    - Clean Architecture (4 layers)
+    - Authentication with Argon2
+    - Mongock migrations (V001, V002)
+    - ActivityType categorization
+    - Comprehensive validation
+end note
+
+note right of frontend
+    UI Features:
+    - Dynamic activity filtering
+    - Automatic categorization display
+    - Teacher login modal
+    - Registration management
+    - Responsive design
+end note
 
 @enduml
