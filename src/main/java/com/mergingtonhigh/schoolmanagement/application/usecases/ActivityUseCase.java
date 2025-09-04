@@ -2,6 +2,7 @@ package com.mergingtonhigh.schoolmanagement.application.usecases;
 
 import com.mergingtonhigh.schoolmanagement.application.dtos.ActivityDTO;
 import com.mergingtonhigh.schoolmanagement.domain.entities.Activity;
+import com.mergingtonhigh.schoolmanagement.domain.valueobjects.DifficultyLevel;
 import com.mergingtonhigh.schoolmanagement.domain.repositories.ActivityRepository;
 import com.mergingtonhigh.schoolmanagement.presentation.mappers.ActivityMapper;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,13 @@ public class ActivityUseCase {
      * Get all activities with optional filtering.
      */
     public Map<String, ActivityDTO> getActivities(String day, String startTime, String endTime) {
+        return getActivities(day, startTime, endTime, null);
+    }
+
+    /**
+     * Get all activities with optional filtering including difficulty level.
+     */
+    public Map<String, ActivityDTO> getActivities(String day, String startTime, String endTime, String difficultyLevel) {
         List<Activity> activities;
         
         if (day != null || startTime != null || endTime != null) {
@@ -46,6 +54,27 @@ public class ActivityUseCase {
             }
         } else {
             activities = activityRepository.findAll();
+        }
+        
+        // Apply difficulty filtering
+        if (difficultyLevel != null && !difficultyLevel.trim().isEmpty()) {
+            if ("todos".equalsIgnoreCase(difficultyLevel)) {
+                // Filter to show only activities without difficulty specified
+                activities = activities.stream()
+                        .filter(activity -> activity.getDifficultyLevel() == null)
+                        .collect(Collectors.toList());
+            } else {
+                // Filter by specific difficulty level
+                try {
+                    DifficultyLevel targetLevel = DifficultyLevel.valueOf(difficultyLevel.toUpperCase());
+                    activities = activities.stream()
+                            .filter(activity -> targetLevel.equals(activity.getDifficultyLevel()))
+                            .collect(Collectors.toList());
+                } catch (IllegalArgumentException e) {
+                    // Invalid difficulty level, return empty result
+                    activities = List.of();
+                }
+            }
         }
         
         return activities.stream()
