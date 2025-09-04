@@ -18,7 +18,7 @@ import com.mergingtonhigh.schoolmanagement.domain.entities.Activity;
 import com.mergingtonhigh.schoolmanagement.domain.valueobjects.ActivityType;
 
 /**
- * Integration test to verify the database migration correctly seeds the Manga Maniacs activity.
+ * Integration test to verify the V002 database migration correctly adds the Manga Maniacs activity.
  */
 @SpringBootTest
 @Testcontainers
@@ -41,8 +41,10 @@ class MangaManiacsMigrationTest {
 
         assertNotNull(mangaActivity, "Manga Maniacs activity should be seeded");
         assertEquals("Manga Maniacs", mangaActivity.getName());
-        assertEquals("Explore as histórias fantásticas dos personagens mais interessantes dos Mangás japoneses (romances gráficos)", 
-                mangaActivity.getDescription());
+        assertTrue(mangaActivity.getDescription().contains("Mergulhe no universo épico dos mangás japoneses"), 
+                "Description should be engaging and mention manga universe");
+        assertTrue(mangaActivity.getDescription().contains("otakus"), 
+                "Description should use otaku terminology");
         assertEquals(15, mangaActivity.getMaxParticipants());
         assertEquals(ActivityType.ARTS, mangaActivity.getType());
         assertEquals("Terças-feiras, 19:00 - 20:30", mangaActivity.getSchedule());
